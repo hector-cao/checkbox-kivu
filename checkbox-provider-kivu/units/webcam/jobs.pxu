@@ -1,3 +1,34 @@
+# plugin: attachment
+# category_id: kivu-webcam
+# id: kivu-webcam/screenshot-attach
+# estimated_duration: 1.0
+# command:
+#  set -o pipefail
+#  cat "$PLAINBOX_SESSION_SHARE"/*reboot.1.log
+# _description:
+#  This will attach any screenshot
+
+id: kivu-webcam/camera_detect
+category_id: kivu-webcam
+unit: job
+plugin: shell
+user: root
+_summary: Detect camera
+requires:
+  executable.name == "gst-launch-1.0"
+  manifest.has_camera == 'True'
+flags: preserve-locale noreturn autorestart
+estimated_duration: 180.0
+command:
+  camera_test.py detect
+  echo "DETECT CAMERA HECTOR ($PLAINBOX_SESSION_SHARE): $?"
+  apt install -y oem-somerville-tentacool-meta
+  apt update
+  apt install -y libcamhal-ipu6ep0
+  dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.Reboot" boolean:true
+_description:
+  Check for camera
+
 id: kivu-webcam/gstreamer_h264_webcam_encoding
 category_id: kivu-webcam
 plugin: shell
@@ -69,6 +100,7 @@ command:
       exit 1
   fi
   compare_intel_gpu_top_json.py "${PLAINBOX_SESSION_SHARE}"/chromium_h264_webcam_encoding_enabled_intel_gpu_top.json "${PLAINBOX_SESSION_SHARE}"/chromium_h264_webcam_encoding_disabled_intel_gpu_top.json
+
 
 id: kivu-webcam/chromium_h264_onecopy
 category_id: kivu-webcam
