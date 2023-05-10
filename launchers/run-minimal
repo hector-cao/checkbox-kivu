@@ -1,0 +1,10 @@
+#!/bin/bash
+
+systemctl is-active --quiet checkbox-ng.service
+if [ $? -eq 0 ]; then
+  sudo systemctl stop checkbox-ng.service || true
+  sleep 5
+  sudo systemctl start snap.checkbox-kivu-classic.remote-slave.service || true
+fi
+
+checkbox-kivu-classic.test-runner-automated-minimal
